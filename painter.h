@@ -15,7 +15,9 @@ class Painter : public QOpenGLWidget {
 
 private:
     vector<QPoint> point;
+    vector<QLine> line;
     QLabel *coordinates;
+    void fillPolygon();
 
 protected:
     void paintGL();
