@@ -7,6 +7,15 @@ bool sortBySecond(const tuple<int, double, double>& a,
 
 void Painter::mousePressEvent(QMouseEvent *event) {
     point.push_back(event->pos());
+
+    if (point.size() > 2
+            && abs(point.back().x() - point.front().x()) <= 5
+            && abs(point.back().y() - point.front().y()) <= 5) {
+        point.back().setX(point.front().x());
+        point.back().setY(point.front().y());
+        finish = true;
+    }
+
     if (point.size() > 1)
         line.push_back(QLine(point[point.size() - 2], point.back()));
     update();
@@ -17,7 +26,6 @@ void Painter::paintGL() {
     QPainter painter(this);
     QPen pen(1);
     pen.setColor(Qt::white);
-
     painter.setPen(pen);
 
     if (finished) {
@@ -25,16 +33,6 @@ void Painter::paintGL() {
             painter.drawLine(polygon[i]);
         }
         return;
-    }
-
-    bool finish = false;
-
-    if (point.size() > 2
-            && abs(point.back().x() - point.front().x()) <= 5
-            && abs(point.back().y() - point.front().y()) <= 5) {
-        point.back().setX(point.front().x());
-        point.back().setY(point.front().y());
-        finish = true;
     }
 
     for (vector<QPoint>::iterator i = point.begin(); i != point.end(); i++) {
@@ -67,11 +65,10 @@ void Painter::paintGL() {
 }
 
 void Painter::fillPolygon() {
-    QTextStream(stdout) << "filling" << endl;
+
     QPainter painter(this);
     QPen pen(1);
     pen.setColor(Qt::white);
-
     painter.setPen(pen);
 
     //TODO define max height
@@ -81,52 +78,45 @@ void Painter::fillPolygon() {
 
     vector<tuple<int, double, double>> aet;
 
-    while(!line.empty()) {
-        QLine l = line.front();
+    for(int i = 0; i < line.size(); i++) {
+        QLine l = line[i];
         if (l.y1() != l.y2()) {
             int ymin = (l.y1() < l.y2() ? l.y1() : l.y2());
-            int xmin = (l.x1() < l.x2() ? l.x1() : l.x2());
-            int ymax = (l.y1() > l.y2() ? l.y1() : l.y2());
-            //int xmax = (l.x1() > l.x2() ? l.x1() : l.x2());
-            if (ymin >= 0 && xmin >= 0 && ymax < height) {
-                double m = (ymin - ymax);
-                if (l.y1() == ymin) m /= (l.x1() - l.x2());
-                else m /= (l.x2() - l.x1());
-                //QTextStream(stdout) << "linha: " << ymin << ": " << ymax << ", " << xmin << ", " << 1/m << endl;
-                et[ymin].push_back(make_tuple(ymax, double(xmin), 1/m));
-            }
+            int xmin = (l.y1() < l.y2() ? l.x1() : l.x2());
+            int ymax = (l.y1() < l.y2() ? l.y2() : l.y1());
+            int xmax = (l.y1() < l.y2() ? l.x2() : l.x1());
+            double m = (ymax - ymin) / double(xmax - xmin);
+
+            et[ymin].push_back(make_tuple(ymax, double(xmin), 1/m));
+
         }
-        line.erase(line.begin());
     }
 
-    for (int i = 0; i < height || !aet.empty(); i++) {
+    for (int i = 0; i < height; i++) {
         //get all et elements of line and put in aet
-        if (i >= height) return;
+        //TODO verify aet
         while (!et[i].empty()) {
             aet.push_back(et[i].front());
             et[i].erase(et[i].begin());
         }
 
         //sort by x
-        sort(aet.begin(), aet.end(), &sortBySecond);
+        sort(aet.begin(), aet.end(), sortBySecond);
 
         //erase all that finish at that line
         for (int j = 0; j < aet.size(); j++) {
-            if (get<0>(aet[j]) <= i) {
+            if (get<0>(aet[j]) == i) {
                 aet.erase(aet.begin() + j);
+                j--;
             }
         }
 
         if (aet.empty()) continue;
 
-        QTextStream(stdout) << "i: " << i << endl;
         //fill pixels
-        for (int j = 0; j < aet.size() - 1; j++) {
+        for (int j = 0; j < aet.size(); j++) {
             //TODO check rules for rounding
-            QTextStream(stdout) << "j: " << j << " ";
             int start = get<1>(aet[j]);
-            QTextStream(stdout) << "start: " << start << endl;
-            if (start < 0) break;
             int end = get<1>(aet[++j]);
 
             painter.drawLine(start, i, end - 1, i);
@@ -141,29 +131,6 @@ void Painter::fillPolygon() {
         //TODO sort again?
     }
 
-    /*
-    for (int i = 0; i < height; i++) {
-        if (!et[i].empty()) {
-            sort(et[i].begin(), et[i].end(), &sortBySecond);
-
-        }
-    }*/
-
-
-
-    /*
-    for (int i = 0; i < height; i++) {
-        if (!et[i].empty()) {
-            QTextStream(stdout) << "Linha " << i << ": ";
-            for (int j = 0; j < et[i].size(); j++) {
-                QTextStream(stdout) << "(" << get<0>(et[i][j]) << ", " << get<1>(et[i][j]) << ", " << get<2>(et[i][j]) << ") ";
-            }
-            QTextStream(stdout) << "" << endl;
-        }
-    }*/
-
-
-    //this->close();
 }
 
 

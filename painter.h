@@ -19,6 +19,7 @@ private:
     QLabel *coordinates;
     void fillPolygon();
     bool finished = false;
+    bool finish = false;
     vector<QLine> polygon;
 
 protected:
