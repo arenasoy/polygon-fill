@@ -18,6 +18,8 @@ private:
     vector<QLine> line;
     QLabel *coordinates;
     void fillPolygon();
+    bool finished = false;
+    vector<QLine> polygon;
 
 protected:
     void paintGL();
