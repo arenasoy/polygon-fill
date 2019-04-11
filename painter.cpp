@@ -38,11 +38,16 @@ void Painter::clear() {
     update();
 }
 
+void Painter::changeColor( QColor color )
+{
+    fillColor = color;
+}
+
 void Painter::paintGL() {
 
     QPainter painter(this);
     QPen pen(1);
-    pen.setColor(Qt::white);
+    pen.setColor(fillColor);
     painter.setPen(pen);
 
     if (finished) {

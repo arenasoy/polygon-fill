@@ -21,6 +21,7 @@ private:
     bool finish = false;
     vector<QLine> polygon;
     void fillPolygon();
+    QColor fillColor = Qt::white;
 
 protected:
     void paintGL();
@@ -29,6 +30,7 @@ protected:
 public:
     Painter(QWidget *parent);
     void clear();
+    void changeColor( QColor color);
 
 };
 
