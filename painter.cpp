@@ -1,5 +1,7 @@
 #include "painter.h"
 
+Painter::Painter(QWidget *parent) : QOpenGLWidget (parent) {};
+
 bool sortBySecond(const tuple<int, double, double>& a,
                const tuple<int, double, double>& b) {
     return (get<1>(a) < get<1>(b));
@@ -18,6 +20,21 @@ void Painter::mousePressEvent(QMouseEvent *event) {
 
     if (point.size() > 1)
         line.push_back(QLine(point[point.size() - 2], point.back()));
+    update();
+}
+
+void Painter::clear() {
+
+    for(int i = 0; i < coordinates.size(); i++) {
+        coordinates[i]->clear();
+    }
+    coordinates.clear();
+    point.clear();
+    line.clear();
+    finished = false;
+    finish = false;
+    polygon.clear();
+    this->setEnabled(true);
     update();
 }
 
@@ -55,12 +72,13 @@ void Painter::paintGL() {
             return;
             //TODO end app
         }
-        coordinates = new QLabel(this);
-        coordinates->setText("(" + QString::number(point.back().x()) + ", " + QString::number(point.back().y()) + ")");
-        coordinates->setStyleSheet("color: white");
+
+        coordinates.push_back(new QLabel(this));
+        coordinates.back()->setText("(" + QString::number(point.back().x()) + ", " + QString::number(point.back().y()) + ")");
+        coordinates.back()->setStyleSheet("color: white");
         //TODO: verify if point is inside the screen
-        coordinates->setGeometry(point.back().x(), point.back().y(), 200, 15);
-        coordinates->show();
+        coordinates.back()->setGeometry(point.back().x(), point.back().y(), 200, 15);
+        coordinates.back()->show();
     }
 }
 

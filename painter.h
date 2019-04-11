@@ -16,16 +16,19 @@ class Painter : public QOpenGLWidget {
 private:
     vector<QPoint> point;
     vector<QLine> line;
-    QLabel *coordinates;
-    void fillPolygon();
+    vector<QLabel*> coordinates;
     bool finished = false;
     bool finish = false;
     vector<QLine> polygon;
+    void fillPolygon();
 
 protected:
     void paintGL();
-
     void mousePressEvent(QMouseEvent *event);
+
+public:
+    Painter(QWidget *parent);
+    void clear();
 
 };
 
