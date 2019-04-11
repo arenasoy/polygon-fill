@@ -20,7 +20,7 @@ void MainWindow::on_clearButton_clicked()
 
 void MainWindow::on_red_clicked()
 {
-    this->ui->painter->changeColor(Qt::red);
+    this->ui->painter->changeColor(QColor(239, 41, 41, 255));
 }
 
 void MainWindow::on_orange_clicked()
@@ -30,17 +30,17 @@ void MainWindow::on_orange_clicked()
 
 void MainWindow::on_yellow_clicked()
 {
-    this->ui->painter->changeColor(Qt::yellow);
+    this->ui->painter->changeColor(QColor(252, 233, 79, 255));
 }
 
 void MainWindow::on_green_clicked()
 {
-    this->ui->painter->changeColor(Qt::green);
+    this->ui->painter->changeColor(QColor(138, 226, 52, 255));
 }
 
 void MainWindow::on_blue_clicked()
 {
-    this->ui->painter->changeColor(Qt::blue);
+    this->ui->painter->changeColor(QColor(114, 159, 207, 255));
 }
 
 void MainWindow::on_purple_clicked()
