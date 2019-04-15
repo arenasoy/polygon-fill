@@ -9,8 +9,5 @@ int main(int argc, char *argv[])
     MainWindow w;
     w.show();
 
-   // Painter p;
-   // p.show();
-
     return a.exec();
 }

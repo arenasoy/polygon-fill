@@ -7,6 +7,7 @@ bool sortBySecond(const tuple<int, double, double>& a,
     return (get<1>(a) < get<1>(b));
 }
 
+//on mouse press, save new point and draw an edge between the last and the new
 void Painter::mousePressEvent(QMouseEvent *event) {
     point.push_back(event->pos());
 
@@ -23,6 +24,7 @@ void Painter::mousePressEvent(QMouseEvent *event) {
     update();
 }
 
+//clear the screen
 void Painter::clear() {
 
     for(int i = 0; i < coordinates.size(); i++) {
@@ -38,6 +40,7 @@ void Painter::clear() {
     update();
 }
 
+//change color to fill the polygon
 void Painter::changeColor( QColor color )
 {
     fillColor = color;
@@ -50,6 +53,7 @@ void Painter::paintGL() {
     pen.setColor(fillColor);
     painter.setPen(pen);
 
+    //if polygon is finished, draw the polygon
     if (finished) {
         for(int i = 0; i < polygon.size(); i++) {
             painter.drawLine(polygon[i]);
@@ -57,31 +61,35 @@ void Painter::paintGL() {
         return;
     }
 
+    //if it is not, draw every point
     for (vector<QPoint>::iterator i = point.begin(); i != point.end(); i++) {
             painter.drawPoint(*i);
     }
 
     int size = line.size();
 
+    //draw every edge
     for(int i = 0; i < size; i++) {
         painter.drawLine(line[i]);
     }
 
     if (point.size() > 0) {
-        //TODO: display coordinates of every point?
+
+        //if user just draw the finish point
+        //executes the fill algorithm for the first time
+        //and saves the result in polygon (to not need
+        //to execute the algorithm everytime screens repaint)
         if (finish) {
-            //TODO start thread?
             fillPolygon();
             this->setEnabled(false);
             finished = true;
             return;
-            //TODO end app
         }
 
+        //or just draw another coordinates point
         coordinates.push_back(new QLabel(this));
         coordinates.back()->setText("(" + QString::number(point.back().x()) + ", " + QString::number(point.back().y()) + ")");
         coordinates.back()->setStyleSheet("color: white");
-        //TODO: verify if point is inside the screen
         coordinates.back()->setGeometry(point.back().x(), point.back().y(), 200, 15);
         coordinates.back()->show();
     }
@@ -94,13 +102,13 @@ void Painter::fillPolygon() {
     pen.setColor(Qt::white);
     painter.setPen(pen);
 
-    //TODO define max height
     int height = painter.device()->height();
 
     vector<tuple<int, double, double>> et[height];
 
     vector<tuple<int, double, double>> aet;
 
+    //fill et
     for(int i = 0; i < line.size(); i++) {
         QLine l = line[i];
         if (l.y1() != l.y2()) {
@@ -117,7 +125,6 @@ void Painter::fillPolygon() {
 
     for (int i = 0; i < height; i++) {
         //get all et elements of line and put in aet
-        //TODO verify aet
         while (!et[i].empty()) {
             aet.push_back(et[i].front());
             et[i].erase(et[i].begin());
@@ -140,7 +147,7 @@ void Painter::fillPolygon() {
         for (int j = 0; j < aet.size(); j++) {
             //TODO check rules for rounding
             int start = get<1>(aet[j]);
-            int end = get<1>(aet[++j]);
+            int end = ceil(get<1>(aet[++j]));
 
             painter.drawLine(start, i, end - 1, i);
             polygon.push_back(QLine(start, i, end - 1, i));
@@ -151,7 +158,6 @@ void Painter::fillPolygon() {
             get<1>(aet[j]) = (get<1>(aet[j]) + get<2>(aet[j]));
         }
 
-        //TODO sort again?
     }
 
 }
