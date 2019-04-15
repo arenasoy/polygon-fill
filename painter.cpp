@@ -11,7 +11,7 @@ bool sortBySecond(const tuple<int, double, double>& a,
 void Painter::mousePressEvent(QMouseEvent *event) {
     point.push_back(event->pos());
 
-    if (point.size() > 2
+    if (point.size() > 3
             && abs(point.back().x() - point.front().x()) <= 5
             && abs(point.back().y() - point.front().y()) <= 5) {
         point.back().setX(point.front().x());
